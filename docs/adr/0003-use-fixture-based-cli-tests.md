@@ -9,7 +9,6 @@ This tool is small, but it still has behavior worth protecting:
 
 - decoding UTF-8 and UTF-16 clipboard contents
 - skipping image-only entries
-- optionally skipping file-copy entries
 - auto-detecting the Maccy database path
 - preserving the intended command-line UX
 

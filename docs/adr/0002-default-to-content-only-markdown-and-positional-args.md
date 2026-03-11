@@ -21,7 +21,6 @@ Default the tool to:
 Retain only a small set of non-default behavior flags:
 
 - `--copy`
-- `--skip-files`
 - `--db`
 
 ## Consequences

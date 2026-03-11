@@ -7,15 +7,14 @@ This is a small macOS utility for turning a run of clipboard history into one fi
 ## Main Use Case
 
 ```bash
-node combine-maccy-pastes.js
+node combine-maccy-pastes.js 25 meeting-notes.md
 ```
 
-That writes the last 10 Maccy pastes into `combined.md` as plain Markdown content blocks, newest first, separated by blank lines.
+That writes the last 25 Maccy pastes into `meeting-notes.md` as plain Markdown content blocks, newest first, separated by blank lines.
 
 Defaults:
 
-- count: `10`
-- output: `combined.md`
+- `node combine-maccy-pastes.js` still uses `10` and `combined.md`
 
 ## Why
 
@@ -27,7 +26,6 @@ Maccy is good at storing lots of clipboard history. It is less convenient when y
 - Combines the last `N` clipboard entries into one Markdown file
 - Skips image-only clipboard entries automatically
 - Supports copying the combined result back to the clipboard
-- Can skip Finder-style file-copy entries when needed
 - Works from any directory as long as it can find the Maccy database
 - Captures key implementation decisions in MADRs
 
@@ -54,7 +52,6 @@ node combine-maccy-pastes.js 25
 node combine-maccy-pastes.js 25 meeting-notes.md
 node combine-maccy-pastes.js notes.md
 node combine-maccy-pastes.js 10 --copy
-node combine-maccy-pastes.js 10 notes.md --skip-files
 ```
 
 ## Sample Session
@@ -100,7 +97,6 @@ Third note
 - positional `count`: Number of recent Maccy items to combine. Defaults to `10`.
 - positional `output.md`: Output Markdown file path. Defaults to `combined.md`.
 - `--copy`: Copy the combined result to the clipboard with `pbcopy`
-- `--skip-files`: Skip file-copy entries such as Finder selections
 - `--db`: Use a specific SQLite database path
 - `-`: Use `-` as the output path to write to stdout instead of a file
 - `-h`, `--help`: Show usage
@@ -109,14 +105,14 @@ Third note
 
 If `--db` is not provided, the script looks for `Storage.sqlite` in this order:
 
-1. Next to `combine-maccy-pastes.js`
-2. The standard Maccy container path in the current user's home directory
-3. The current working directory
+1. The standard Maccy container path in the current user's home directory
+2. The current working directory
+3. Next to `combine-maccy-pastes.js` for local/dev setups
 
 ## Notes
 
 - This project targets macOS with Maccy.
-- File-copy entries may still contain filenames as text unless `--skip-files` is used.
+- Finder file-copy entries are treated like any other text-backed clipboard item.
 - Image-only clipboard entries are skipped automatically.
 
 ## Decisions

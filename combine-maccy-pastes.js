@@ -7,7 +7,7 @@ const path = require("path");
 
 function printUsage() {
   console.log(`Usage:
-  node combine-maccy-pastes.js [count] [output.md] [--copy] [--skip-files] [--db FILE]
+  node combine-maccy-pastes.js [count] [output.md] [--copy] [--db FILE]
 
 Examples:
   node combine-maccy-pastes.js
@@ -22,7 +22,6 @@ function parseArgs(argv) {
     count: 10,
     output: "combined.md",
     copy: false,
-    skipFiles: false,
     db: null,
   };
   const positionals = [];
@@ -31,8 +30,6 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === "--copy") {
       options.copy = true;
-    } else if (arg === "--skip-files") {
-      options.skipFiles = true;
     } else if (arg === "--db") {
       options.db = argv[++i];
     } else if (arg === "--help" || arg === "-h") {
@@ -75,7 +72,6 @@ function resolveDbPath(explicitDbPath) {
   }
 
   const candidates = [
-    path.join(__dirname, "Storage.sqlite"),
     path.join(
       os.homedir(),
       "Library",
@@ -88,6 +84,7 @@ function resolveDbPath(explicitDbPath) {
       "Storage.sqlite",
     ),
     path.join(process.cwd(), "Storage.sqlite"),
+    path.join(__dirname, "Storage.sqlite"),
   ];
 
   for (const candidate of candidates) {
@@ -153,7 +150,6 @@ ORDER BY l.ZLASTCOPIEDAT DESC, c.ZTYPE;
         id: row.id,
         title: row.title || "",
         text: null,
-        fileUrls: [],
         imageTypes: [],
       });
     }
@@ -162,8 +158,6 @@ ORDER BY l.ZLASTCOPIEDAT DESC, c.ZTYPE;
     const decoded = decodeValue(row.type, row.valueHex);
     if (row.type === "public.utf8-plain-text" || row.type === "public.utf16-external-plain-text") {
       if (!item.text) item.text = decoded;
-    } else if (row.type === "public.file-url" && decoded) {
-      item.fileUrls.push(decoded);
     } else if (isImageType(row.type)) {
       item.imageTypes.push(row.type);
     }
@@ -177,20 +171,15 @@ function normalizeBody(item) {
   return body.replace(/\r/g, "\n").trim();
 }
 
-function isFileOnlyItem(item) {
-  return item.fileUrls.length > 0 && item.title.startsWith("file://");
-}
-
 function isImageType(type) {
   if (!type) return false;
   return /image|png|jpe?g|gif|tiff|bmp|webp|heic|heif|svg/i.test(type);
 }
 
-function toMarkdown(items, options) {
+function toMarkdown(items) {
   const blocks = [];
   for (const item of items) {
     if (item.imageTypes.length > 0 && !item.text) continue;
-    if (options.skipFiles && isFileOnlyItem(item)) continue;
 
     const body = normalizeBody(item);
     if (!body) continue;
@@ -223,7 +212,7 @@ function main() {
 
   const dbPath = resolveDbPath(options.db);
   const items = loadItems(dbPath, options.count);
-  const rendered = toMarkdown(items, options);
+  const rendered = toMarkdown(items);
 
   writeOutput(rendered, options);
 

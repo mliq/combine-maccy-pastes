@@ -96,29 +96,23 @@ test("supports positional count and output arguments", async () => {
   assert.equal(output, "Newest text\n\nfinder-item\n");
 });
 
-test("skips file-copy entries when requested", async () => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "combine-maccy-pastes-"));
-  const dbPath = path.join(tempDir, "fixture.sqlite");
-  createFixtureDb(dbPath);
-
-  const result = runCli(["4", "-", "--db", dbPath, "--skip-files"], { cwd: tempDir });
-  assert.equal(result.stdout, "Newest text\n\nOlder utf16\n");
-});
-
 test("auto-detects a database next to the script", async () => {
   const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "combine-maccy-pastes-"));
   const dbPath = path.join(tempDir, "Storage.sqlite");
   const tempScriptPath = path.join(tempDir, "combine-maccy-pastes.js");
+  const tempHome = path.join(tempDir, "home");
   const runDir = path.join(tempDir, "elsewhere");
 
   createFixtureDb(dbPath);
   await fs.promises.copyFile(scriptPath, tempScriptPath);
+  await fs.promises.mkdir(tempHome);
   await fs.promises.mkdir(runDir);
 
   const outputPath = path.join(tempDir, "combined.md");
   const result = spawnSync("node", [tempScriptPath, "2", outputPath], {
     encoding: "utf8",
     cwd: runDir,
+    env: { ...process.env, HOME: tempHome },
   });
 
   assert.equal(result.status, 0, result.stderr);

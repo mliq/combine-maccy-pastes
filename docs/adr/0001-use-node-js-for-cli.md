@@ -16,7 +16,7 @@ Possible implementation choices included shell, Node.js, and Python.
 
 ## Decision
 
-Use Node.js for the current implementation.
+Use Node.js for the current implementation because codex choose this by default and it is not worth the effort to switch to Python for a small utility that works well enough as it is.
 
 ## Consequences
 
