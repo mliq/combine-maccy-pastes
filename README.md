@@ -37,6 +37,12 @@ From npm after publish:
 npm install -g combine-maccy-pastes
 ```
 
+Without installing globally:
+
+```bash
+npx combine-maccy-pastes 25 meeting-notes.md
+```
+
 From source during local development:
 
 ```bash

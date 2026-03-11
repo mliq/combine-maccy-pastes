@@ -1,6 +1,6 @@
 {
   "name": "combine-maccy-pastes",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Combine the most recent Maccy clipboard entries into a single Markdown document.",
   "author": "Michael Liquori",
   "license": "MIT",
