@@ -7,7 +7,8 @@
     "combine-maccy-pastes": "./combine-maccy-pastes.js"
   },
   "scripts": {
-    "help": "node combine-maccy-pastes.js --help"
+    "help": "node combine-maccy-pastes.js --help",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=18"

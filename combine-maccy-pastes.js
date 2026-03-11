@@ -7,7 +7,7 @@ const path = require("path");
 
 function printUsage() {
   console.log(`Usage:
-  node combine-maccy-pastes.js -c 10 [-o FILE] [--copy]
+  node combine-maccy-pastes.js -c 10 [-o FILE] [--copy] [--skip-files] [--db FILE]
 
 Examples:
   node combine-maccy-pastes.js -c 10 -o combined.md
@@ -20,7 +20,6 @@ function parseArgs(argv) {
     count: 10,
     output: null,
     copy: false,
-    includeMeta: false,
     skipFiles: false,
     db: null,
   };
@@ -33,8 +32,6 @@ function parseArgs(argv) {
       options.output = argv[++i];
     } else if (arg === "--copy") {
       options.copy = true;
-    } else if (arg === "--include-meta") {
-      options.includeMeta = true;
     } else if (arg === "--skip-files") {
       options.skipFiles = true;
     } else if (arg === "--db") {
@@ -113,16 +110,13 @@ function decodeValue(type, valueHex) {
 function loadItems(dbPath, count) {
   const sql = `
 WITH last AS (
-  SELECT Z_PK, ZLASTCOPIEDAT, ZNUMBEROFCOPIES, ZTITLE, ZAPPLICATION
+  SELECT Z_PK, ZLASTCOPIEDAT, ZTITLE
   FROM ZHISTORYITEM
   ORDER BY ZLASTCOPIEDAT DESC
   LIMIT ${count}
 )
 SELECT
   l.Z_PK AS id,
-  datetime(l.ZLASTCOPIEDAT + 978307200, 'unixepoch', 'localtime') AS lastCopiedAtLocal,
-  l.ZNUMBEROFCOPIES AS numberOfCopies,
-  l.ZAPPLICATION AS application,
   l.ZTITLE AS title,
   c.ZTYPE AS type,
   hex(c.ZVALUE) AS valueHex
@@ -138,11 +132,7 @@ ORDER BY l.ZLASTCOPIEDAT DESC, c.ZTYPE;
     if (!byId.has(row.id)) {
       byId.set(row.id, {
         id: row.id,
-        lastCopiedAtLocal: row.lastCopiedAtLocal,
-        numberOfCopies: row.numberOfCopies,
-        application: row.application || "",
         title: row.title || "",
-        sourceUrl: null,
         text: null,
         fileUrls: [],
         imageTypes: [],
@@ -153,8 +143,6 @@ ORDER BY l.ZLASTCOPIEDAT DESC, c.ZTYPE;
     const decoded = decodeValue(row.type, row.valueHex);
     if (row.type === "public.utf8-plain-text" || row.type === "public.utf16-external-plain-text") {
       if (!item.text) item.text = decoded;
-    } else if (row.type === "org.chromium.source-url") {
-      item.sourceUrl = decoded;
     } else if (row.type === "public.file-url" && decoded) {
       item.fileUrls.push(decoded);
     } else if (isImageType(row.type)) {
@@ -171,7 +159,7 @@ function normalizeBody(item) {
 }
 
 function isFileOnlyItem(item) {
-  return item.fileUrls.length > 0 && !item.sourceUrl && item.title.startsWith("file://");
+  return item.fileUrls.length > 0 && item.title.startsWith("file://");
 }
 
 function isImageType(type) {
@@ -187,12 +175,6 @@ function toMarkdown(items, options) {
 
     const body = normalizeBody(item);
     if (!body) continue;
-    if (options.includeMeta) {
-      blocks.push(`- copied_at: ${item.lastCopiedAtLocal}`);
-      if (item.sourceUrl) blocks.push(`- source_url: ${item.sourceUrl}`);
-      if (item.fileUrls.length) blocks.push(`- file_urls: ${item.fileUrls.join(", ")}`);
-      blocks.push("");
-    }
     blocks.push(body);
   }
   return blocks.join("\n\n").trimEnd() + "\n";

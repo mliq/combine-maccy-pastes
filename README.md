@@ -2,6 +2,8 @@
 
 Combine the most recent Maccy clipboard entries into a single Markdown document.
 
+This is a small macOS utility for turning a run of clipboard history into one file you can save, share, or feed into another tool.
+
 ## Main Use Case
 
 ```bash
@@ -10,6 +12,10 @@ node combine-maccy-pastes.js -c 10 -o combined.md
 
 That writes the last 10 Maccy pastes into `combined.md` as plain Markdown content blocks, newest first, separated by blank lines.
 
+## Why
+
+Maccy is good at storing lots of clipboard history. It is less convenient when you want to turn the last few copies into one clean document. This script does that without adding headings or metadata to the output by default.
+
 ## Features
 
 - Auto-detects the Maccy `Storage.sqlite` database
@@ -17,6 +23,7 @@ That writes the last 10 Maccy pastes into `combined.md` as plain Markdown conten
 - Skips image-only clipboard entries automatically
 - Supports copying the combined result back to the clipboard
 - Can skip Finder-style file-copy entries when needed
+- Works from any directory as long as it can find the Maccy database
 
 ## Installation
 
@@ -42,13 +49,38 @@ node combine-maccy-pastes.js -c 10 --copy
 node combine-maccy-pastes.js -c 10 --skip-files -o notes.md
 ```
 
+## Example Output
+
+If your recent clipboard history is:
+
+```text
+First note
+Second note
+Third note
+```
+
+Then:
+
+```bash
+node combine-maccy-pastes.js -c 3 -o combined.md
+```
+
+Produces:
+
+```md
+First note
+
+Second note
+
+Third note
+```
+
 ## Options
 
 - `-c`, `--count`: Number of recent Maccy items to combine
 - `-o`, `--output`: Output Markdown file path
 - `--copy`: Copy the combined result to the clipboard with `pbcopy`
 - `--skip-files`: Skip file-copy entries such as Finder selections
-- `--include-meta`: Include timestamps, source URLs, and file URLs above each block
 - `--db`: Use a specific SQLite database path
 - `-h`, `--help`: Show usage
 
@@ -62,8 +94,9 @@ If `--db` is not provided, the script looks for `Storage.sqlite` in this order:
 
 ## Notes
 
+- This project targets macOS with Maccy.
 - File-copy entries may still contain filenames as text unless `--skip-files` is used.
-- Browser text copies are included. Source URLs are only emitted with `--include-meta`.
+- Image-only clipboard entries are skipped automatically.
 
 ## License
 
