@@ -7,22 +7,25 @@ const path = require("path");
 
 function printUsage() {
   console.log(`Usage:
-  node combine-maccy-pastes.js -c 10 [-o FILE] [--copy] [--skip-files] [--db FILE]
+  node combine-maccy-pastes.js [count] [output.md] [--copy] [--skip-files] [--db FILE]
 
 Examples:
+  node combine-maccy-pastes.js
+  node combine-maccy-pastes.js 25
+  node combine-maccy-pastes.js 25 notes.md
   node combine-maccy-pastes.js -c 10 -o combined.md
-  node combine-maccy-pastes.js -c 5 --copy
 `);
 }
 
 function parseArgs(argv) {
   const options = {
     count: 10,
-    output: null,
+    output: "combined.md",
     copy: false,
     skipFiles: false,
     db: null,
   };
+  const positionals = [];
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -39,8 +42,28 @@ function parseArgs(argv) {
     } else if (arg === "--help" || arg === "-h") {
       options.help = true;
     } else {
-      throw new Error(`Unknown argument: ${arg}`);
+      positionals.push(arg);
     }
+  }
+
+  if (positionals.length > 2) {
+    throw new Error("Too many positional arguments");
+  }
+
+  if (positionals.length === 1) {
+    if (/^\d+$/.test(positionals[0])) {
+      options.count = Number(positionals[0]);
+    } else {
+      options.output = positionals[0];
+    }
+  }
+
+  if (positionals.length === 2) {
+    if (!/^\d+$/.test(positionals[0])) {
+      throw new Error("When passing two positional arguments, the first must be the paste count");
+    }
+    options.count = Number(positionals[0]);
+    options.output = positionals[1];
   }
 
   if (!Number.isInteger(options.count) || options.count <= 0) {
@@ -181,10 +204,10 @@ function toMarkdown(items, options) {
 }
 
 function writeOutput(text, options) {
-  if (options.output) {
-    fs.writeFileSync(options.output, text);
-  } else {
+  if (options.output === "-") {
     process.stdout.write(text);
+  } else {
+    fs.writeFileSync(options.output, text);
   }
 
   if (options.copy) {
@@ -208,7 +231,7 @@ function main() {
 
   writeOutput(rendered, options);
 
-  const destination = options.output ? path.resolve(options.output) : "stdout";
+  const destination = options.output === "-" ? "stdout" : path.resolve(options.output);
   console.error(`Combined ${items.length} pastes into markdown (${destination})${options.copy ? " and copied to clipboard" : ""}.`);
 }
 

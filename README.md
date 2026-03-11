@@ -7,7 +7,7 @@ This is a small macOS utility for turning a run of clipboard history into one fi
 ## Main Use Case
 
 ```bash
-node combine-maccy-pastes.js -c 10 -o combined.md
+node combine-maccy-pastes.js
 ```
 
 That writes the last 10 Maccy pastes into `combined.md` as plain Markdown content blocks, newest first, separated by blank lines.
@@ -37,16 +37,18 @@ Requirements:
 ## Usage
 
 ```bash
-node combine-maccy-pastes.js -c <count> [-o output.md] [--copy]
+node combine-maccy-pastes.js [count] [output.md] [--copy]
 ```
 
 Examples:
 
 ```bash
-node combine-maccy-pastes.js -c 10 -o combined.md
-node combine-maccy-pastes.js -c 25 -o meeting-notes.md
-node combine-maccy-pastes.js -c 10 --copy
-node combine-maccy-pastes.js -c 10 --skip-files -o notes.md
+node combine-maccy-pastes.js
+node combine-maccy-pastes.js 25
+node combine-maccy-pastes.js 25 meeting-notes.md
+node combine-maccy-pastes.js notes.md
+node combine-maccy-pastes.js 10 --copy
+node combine-maccy-pastes.js 10 notes.md --skip-files
 ```
 
 ## Example Output
@@ -62,7 +64,7 @@ Third note
 Then:
 
 ```bash
-node combine-maccy-pastes.js -c 3 -o combined.md
+node combine-maccy-pastes.js 3 combined.md
 ```
 
 Produces:
@@ -77,11 +79,14 @@ Third note
 
 ## Options
 
+- positional `count`: Number of recent Maccy items to combine. Defaults to `10`.
+- positional `output.md`: Output Markdown file path. Defaults to `combined.md`.
 - `-c`, `--count`: Number of recent Maccy items to combine
 - `-o`, `--output`: Output Markdown file path
 - `--copy`: Copy the combined result to the clipboard with `pbcopy`
 - `--skip-files`: Skip file-copy entries such as Finder selections
 - `--db`: Use a specific SQLite database path
+- `-`: Use `-` as the output path to write to stdout instead of a file
 - `-h`, `--help`: Show usage
 
 ## Database Detection

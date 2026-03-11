@@ -75,13 +75,25 @@ function runCli(args, options = {}) {
   return result;
 }
 
-test("combines recent text entries and skips image-only items", async () => {
+test("writes combined.md by default with the last 10 pastes", async () => {
   const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "combine-maccy-pastes-"));
   const dbPath = path.join(tempDir, "fixture.sqlite");
   createFixtureDb(dbPath);
 
-  const result = runCli(["-c", "4", "--db", dbPath], { cwd: tempDir });
-  assert.equal(result.stdout, "Newest text\n\nfinder-item\n\nOlder utf16\n");
+  runCli(["--db", dbPath], { cwd: tempDir });
+  const output = await fs.promises.readFile(path.join(tempDir, "combined.md"), "utf8");
+  assert.equal(output, "Newest text\n\nfinder-item\n\nOlder utf16\n");
+});
+
+test("supports positional count and output arguments", async () => {
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "combine-maccy-pastes-"));
+  const dbPath = path.join(tempDir, "fixture.sqlite");
+  createFixtureDb(dbPath);
+
+  const outputPath = path.join(tempDir, "notes.md");
+  runCli(["2", outputPath, "--db", dbPath], { cwd: tempDir });
+  const output = await fs.promises.readFile(outputPath, "utf8");
+  assert.equal(output, "Newest text\n\nfinder-item\n");
 });
 
 test("skips file-copy entries when requested", async () => {
@@ -89,7 +101,7 @@ test("skips file-copy entries when requested", async () => {
   const dbPath = path.join(tempDir, "fixture.sqlite");
   createFixtureDb(dbPath);
 
-  const result = runCli(["-c", "4", "--db", dbPath, "--skip-files"], { cwd: tempDir });
+  const result = runCli(["4", "-", "--db", dbPath, "--skip-files"], { cwd: tempDir });
   assert.equal(result.stdout, "Newest text\n\nOlder utf16\n");
 });
 
