@@ -116,7 +116,7 @@ test("auto-detects a database next to the script", async () => {
   await fs.promises.mkdir(runDir);
 
   const outputPath = path.join(tempDir, "combined.md");
-  const result = spawnSync("node", [tempScriptPath, "-c", "2", "-o", outputPath], {
+  const result = spawnSync("node", [tempScriptPath, "2", outputPath], {
     encoding: "utf8",
     cwd: runDir,
   });

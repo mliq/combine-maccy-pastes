@@ -12,6 +12,11 @@ node combine-maccy-pastes.js
 
 That writes the last 10 Maccy pastes into `combined.md` as plain Markdown content blocks, newest first, separated by blank lines.
 
+Defaults:
+
+- count: `10`
+- output: `combined.md`
+
 ## Why
 
 Maccy is good at storing lots of clipboard history. It is less convenient when you want to turn the last few copies into one clean document. This script does that without adding headings or metadata to the output by default.
@@ -51,6 +56,18 @@ node combine-maccy-pastes.js 10 --copy
 node combine-maccy-pastes.js 10 notes.md --skip-files
 ```
 
+## Sample Session
+
+```bash
+$ node combine-maccy-pastes.js 5 notes.md
+$ cat notes.md
+First copied note
+
+Second copied note
+
+Third copied note
+```
+
 ## Example Output
 
 If your recent clipboard history is:
@@ -81,8 +98,6 @@ Third note
 
 - positional `count`: Number of recent Maccy items to combine. Defaults to `10`.
 - positional `output.md`: Output Markdown file path. Defaults to `combined.md`.
-- `-c`, `--count`: Number of recent Maccy items to combine
-- `-o`, `--output`: Output Markdown file path
 - `--copy`: Copy the combined result to the clipboard with `pbcopy`
 - `--skip-files`: Skip file-copy entries such as Finder selections
 - `--db`: Use a specific SQLite database path

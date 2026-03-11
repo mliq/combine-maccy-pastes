@@ -13,7 +13,7 @@ Examples:
   node combine-maccy-pastes.js
   node combine-maccy-pastes.js 25
   node combine-maccy-pastes.js 25 notes.md
-  node combine-maccy-pastes.js -c 10 -o combined.md
+  node combine-maccy-pastes.js notes.md
 `);
 }
 
@@ -29,11 +29,7 @@ function parseArgs(argv) {
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
-    if (arg === "--count" || arg === "-c") {
-      options.count = Number(argv[++i]);
-    } else if (arg === "--output" || arg === "-o") {
-      options.output = argv[++i];
-    } else if (arg === "--copy") {
+    if (arg === "--copy") {
       options.copy = true;
     } else if (arg === "--skip-files") {
       options.skipFiles = true;
