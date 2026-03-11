@@ -6,14 +6,16 @@ const os = require("os");
 const path = require("path");
 
 function printUsage() {
+  const scriptName = path.basename(process.argv[1] || "combine-maccy-pastes.js");
+  const invocation = scriptName.endsWith(".js") ? `node ${scriptName}` : scriptName;
   console.log(`Usage:
-  node combine-maccy-pastes.js [count] [output.md] [--copy] [--db FILE]
+  ${invocation} [count] [output.md] [--copy] [--db FILE]
 
 Examples:
-  node combine-maccy-pastes.js
-  node combine-maccy-pastes.js 25
-  node combine-maccy-pastes.js 25 notes.md
-  node combine-maccy-pastes.js notes.md
+  ${invocation}
+  ${invocation} 25
+  ${invocation} 25 notes.md
+  ${invocation} notes.md
 `);
 }
 
@@ -97,8 +99,17 @@ function resolveDbPath(explicitDbPath) {
 }
 
 function runSqlite(dbPath, sql) {
-  const raw = execFileSync("sqlite3", ["-json", dbPath, sql], { encoding: "utf8" });
-  return JSON.parse(raw);
+  try {
+    const raw = execFileSync("sqlite3", ["-json", dbPath, sql], { encoding: "utf8" });
+    return JSON.parse(raw);
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      throw new Error(
+        "sqlite3 is required on your PATH.\nInstall it with: brew install sqlite\nThen run combine-maccy-pastes again.",
+      );
+    }
+    throw error;
+  }
 }
 
 function decodeValue(type, valueHex) {

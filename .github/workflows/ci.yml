@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "v*"
   pull_request:
 
 jobs:
@@ -22,3 +24,6 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Pack npm tarball
+        run: npm pack --pack-destination /tmp

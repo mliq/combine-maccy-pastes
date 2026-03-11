@@ -7,14 +7,14 @@ This is a small macOS utility for turning a run of clipboard history into one fi
 ## Main Use Case
 
 ```bash
-node combine-maccy-pastes.js 25 meeting-notes.md
+combine-maccy-pastes 25 meeting-notes.md
 ```
 
 That writes the last 25 Maccy pastes into `meeting-notes.md` as plain Markdown content blocks, newest first, separated by blank lines.
 
 Defaults:
 
-- `node combine-maccy-pastes.js` still uses `10` and `combined.md`
+- `combine-maccy-pastes` still uses `10` and `combined.md`
 
 ## Why
 
@@ -31,33 +31,53 @@ Maccy is good at storing lots of clipboard history. It is less convenient when y
 
 ## Installation
 
-Clone the repo and run the script with Node.js.
+From npm after publish:
+
+```bash
+npm install -g combine-maccy-pastes
+```
+
+From source during local development:
+
+```bash
+git clone https://github.com/mliq/combine-maccy-pastes.git
+cd combine-maccy-pastes
+```
 
 Requirements:
 
+- macOS with Maccy
 - Node.js
 - `sqlite3` available on your `PATH`
+
+If `sqlite3` is missing on macOS, install it with:
+
+```bash
+brew install sqlite
+```
 
 ## Usage
 
 ```bash
-node combine-maccy-pastes.js [count] [output.md] [--copy]
+combine-maccy-pastes [count] [output.md] [--copy]
 ```
 
 Examples:
 
 ```bash
-node combine-maccy-pastes.js
-node combine-maccy-pastes.js 25
-node combine-maccy-pastes.js 25 meeting-notes.md
-node combine-maccy-pastes.js notes.md
-node combine-maccy-pastes.js 10 --copy
+combine-maccy-pastes
+combine-maccy-pastes 25
+combine-maccy-pastes 25 meeting-notes.md
+combine-maccy-pastes notes.md
+combine-maccy-pastes 10 --copy
 ```
+
+From a local clone, use `node combine-maccy-pastes.js ...` instead.
 
 ## Sample Session
 
 ```bash
-$ node combine-maccy-pastes.js 5 notes.md
+$ combine-maccy-pastes 5 notes.md
 $ cat notes.md
 First copied note
 
@@ -79,7 +99,7 @@ Third note
 Then:
 
 ```bash
-node combine-maccy-pastes.js 3 combined.md
+combine-maccy-pastes 3 combined.md
 ```
 
 Produces:
@@ -118,6 +138,7 @@ If `--db` is not provided, the script looks for `Storage.sqlite` in this order:
 ## Decisions
 
 Project decisions are tracked in [docs/adr/README.md](./docs/adr/README.md).
+The release checklist lives in [docs/release-checklist.md](./docs/release-checklist.md).
 
 ## License
 

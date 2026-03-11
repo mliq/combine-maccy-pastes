@@ -63,9 +63,10 @@ INSERT INTO ZHISTORYITEMCONTENT (Z_PK, ZITEM, ZTYPE, ZVALUE) VALUES
 }
 
 function runCli(args, options = {}) {
-  const result = spawnSync("node", [scriptPath, ...args], {
+  const result = spawnSync(process.execPath, [scriptPath, ...args], {
     encoding: "utf8",
     cwd: options.cwd,
+    env: options.env ? { ...process.env, ...options.env } : undefined,
   });
 
   if (result.status !== 0) {
@@ -96,6 +97,15 @@ test("supports positional count and output arguments", async () => {
   assert.equal(output, "Newest text\n\nfinder-item\n");
 });
 
+test("help output uses the local node invocation when run from source", () => {
+  const result = spawnSync(process.execPath, [scriptPath, "--help"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /node combine-maccy-pastes\.js \[count\] \[output\.md\] \[--copy\] \[--db FILE\]/);
+});
+
 test("auto-detects a database next to the script", async () => {
   const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "combine-maccy-pastes-"));
   const dbPath = path.join(tempDir, "Storage.sqlite");
@@ -118,4 +128,20 @@ test("auto-detects a database next to the script", async () => {
   assert.equal(result.status, 0, result.stderr);
   const output = await fs.promises.readFile(outputPath, "utf8");
   assert.equal(output, "Newest text\n\nfinder-item\n");
+});
+
+test("prints a friendly error when sqlite3 is unavailable", async () => {
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "combine-maccy-pastes-"));
+  const dbPath = path.join(tempDir, "fixture.sqlite");
+  createFixtureDb(dbPath);
+
+  const result = spawnSync(process.execPath, [scriptPath, "--db", dbPath], {
+    encoding: "utf8",
+    cwd: tempDir,
+    env: { ...process.env, PATH: "" },
+  });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /sqlite3 is required on your PATH/);
+  assert.match(result.stderr, /brew install sqlite/);
 });

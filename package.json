@@ -1,8 +1,32 @@
 {
   "name": "combine-maccy-pastes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Combine the most recent Maccy clipboard entries into a single Markdown document.",
+  "author": "Michael Liquori",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mliq/combine-maccy-pastes.git"
+  },
+  "homepage": "https://github.com/mliq/combine-maccy-pastes#readme",
+  "bugs": {
+    "url": "https://github.com/mliq/combine-maccy-pastes/issues"
+  },
+  "keywords": [
+    "maccy",
+    "clipboard",
+    "markdown",
+    "macos",
+    "cli"
+  ],
+  "os": [
+    "darwin"
+  ],
+  "files": [
+    "combine-maccy-pastes.js",
+    "README.md",
+    "LICENSE"
+  ],
   "bin": {
     "combine-maccy-pastes": "./combine-maccy-pastes.js"
   },
