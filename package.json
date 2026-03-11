@@ -27,9 +27,7 @@
     "README.md",
     "LICENSE"
   ],
-  "bin": {
-    "combine-maccy-pastes": "./combine-maccy-pastes.js"
-  },
+  "bin": "./combine-maccy-pastes.js",
   "scripts": {
     "help": "node combine-maccy-pastes.js --help",
     "test": "node --test"
