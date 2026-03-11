@@ -29,6 +29,7 @@ Maccy is good at storing lots of clipboard history. It is less convenient when y
 - Supports copying the combined result back to the clipboard
 - Can skip Finder-style file-copy entries when needed
 - Works from any directory as long as it can find the Maccy database
+- Captures key implementation decisions in MADRs
 
 ## Installation
 
@@ -117,6 +118,10 @@ If `--db` is not provided, the script looks for `Storage.sqlite` in this order:
 - This project targets macOS with Maccy.
 - File-copy entries may still contain filenames as text unless `--skip-files` is used.
 - Image-only clipboard entries are skipped automatically.
+
+## Decisions
+
+Project decisions are tracked in [docs/adr/README.md](./docs/adr/README.md).
 
 ## License
 
