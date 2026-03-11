@@ -1,0 +1,15 @@
+{
+  "name": "combine-maccy-pastes",
+  "version": "0.1.0",
+  "description": "Combine the most recent Maccy clipboard entries into a single Markdown document.",
+  "license": "MIT",
+  "bin": {
+    "combine-maccy-pastes": "./combine-maccy-pastes.js"
+  },
+  "scripts": {
+    "help": "node combine-maccy-pastes.js --help"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
